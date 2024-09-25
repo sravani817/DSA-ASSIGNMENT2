@@ -1,0 +1,132 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_STUDENTS 100
+#define MAX_NAME_LENGTH 50
+
+void displayStudentList(char students[][MAX_NAME_LENGTH], int size) {
+    printf("Student list: [");
+    for (int i = 0; i < size; i++) {
+        printf("%s", students[i]);
+        if (i < size - 1) {
+            printf(", ");
+        }
+    }
+    printf("]\n");
+}
+
+void insertStudent(char students[][MAX_NAME_LENGTH], int *size, char newName[MAX_NAME_LENGTH], int position) {
+    for (int i = *size; i > position; i--) {
+        strcpy(students[i], students[i - 1]);
+    }
+    strcpy(students[position], newName);
+    (*size)++;
+}
+
+void deleteStudent(char students[][MAX_NAME_LENGTH], int *size, char deleteName[MAX_NAME_LENGTH]) {
+    int found = 0;
+    for (int i = 0; i < *size; i++) {
+        if (strcmp(students[i], deleteName) == 0) {
+            found = 1;
+            for (int j = i; j < *size - 1; j++) {
+                strcpy(students[j], students[j + 1]);
+            }
+            (*size)--;
+            break;
+        }
+    }
+    if (!found) {
+        printf("Student not found.\n");
+    }
+}
+
+void searchStudent(char students[][MAX_NAME_LENGTH], int size, char searchName[MAX_NAME_LENGTH]) {
+    int found = 0;
+    for (int i = 0; i < size; i++) {
+        if (strcmp(students[i], searchName) == 0) {
+            found = 1;
+            printf("%s found at position %d\n", searchName, i);
+            break;
+        }
+    }
+    if (!found) {
+        printf("%s not found.\n", searchName);
+    }
+}
+
+int main() {
+    char students[MAX_STUDENTS][MAX_NAME_LENGTH];
+    int size = 0;
+    int choice;
+
+    while (1) {
+        printf("1. Create the list of students\n");
+        printf("2. Insert a new student\n");
+        printf("3. Delete a student\n");
+        printf("4. Display student list\n");
+        printf("5. Search for a student\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter the number of students: ");
+                scanf("%d", &size);
+                for (int i = 0; i < size; i++) {
+                    printf("Enter student name %d: ", i + 1);
+                    scanf("%s", students[i]);
+                }
+                displayStudentList(students, size);
+                break;
+            case 2:
+                if (size == MAX_STUDENTS) {
+                    printf("List is full. Cannot insert more students.\n");
+                    break;
+                }
+                printf("Enter the student's name to insert: ");
+                char newName[MAX_NAME_LENGTH];
+                scanf("%s", newName);
+                printf("Enter the position (0-based index) to insert the student: ");
+                int position;
+                scanf("%d", &position);
+                if (position < 0 || position > size) {
+                    printf("Invalid position.\n");
+                    break;
+                }
+                insertStudent(students, &size, newName, position);
+                displayStudentList(students, size);
+                break;
+            case 3:
+                printf("Delete by name or position? (n/p): ");
+                char deleteMethod;
+                scanf(" %c", &deleteMethod);
+                if (deleteMethod == 'n') {
+                    printf("Enter the student's name to delete: ");
+                    char deleteName[MAX_NAME_LENGTH];
+                    scanf("%s", deleteName);
+                    deleteStudent(students, &size, deleteName);
+                } else {
+                    printf("This option is not implemented.\n");
+                }
+                displayStudentList(students, size);
+                break;
+            case 4:
+                displayStudentList(students, size);
+                break;
+            case 5:
+                printf("Enter the student's name to search: ");
+                char searchName[MAX_NAME_LENGTH];
+                scanf("%s", searchName);
+                searchStudent(students, size, searchName);
+                break;
+            case 6:
+                printf("Exiting the program...\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
